@@ -1,0 +1,52 @@
+# ---- Advanced Document Finder config ----
+include_dirs
+  - "D:\"
+exclude_globs:
+  - "**/~$*"
+  - "**/.git/**"
+  - "**/__pycache__/**"
+  - "**/*.tmp"
+allowed_exts: # case-insensitive
+  - ".txt"     # solid
+  - ".pdf"     # pdfminer.six
+  - ".docx"    # python-docx
+  - ".pptx"    # python-pptx
+  - ".xlsx"    # pandas+openpyxl
+  - ".xls"     # pandas+xlrd (if installed)
+  - ".ppt"     # legacy; needs textract
+  - ".doc"     # legacy; needs textract
+  - ".wps"     # legacy; best-effort via textract if supported
+
+storage:
+  sqlite_path: "./doc_index.sqlite"   # embeddings + metadata
+  text_max_preview_chars: 400         # stored preview length per chunk
+
+embedding:
+  api_base: "https://api.siliconflow.cn/v1"
+  model: "Qwen/Qwen3-Embedding-4B"
+  api_key_path: "./API_KEY.txt"     # points to text file
+  timeout_s: 5
+  max_retries: 5
+  retry_backoff_s_initial: 2
+  batch_size: 1
+  cast_float32: true
+
+
+chunking:
+  max_chars: 1800                      # safe vs 32k context; chunk what you embed
+  overlap_chars: 200
+  pdf_by_page: true                    # per-page first; then window chunk if page too long
+
+path_context:
+  depth: 3                             # how many parent folders to include
+  joiner: " / "
+
+weights:
+  content: 1.0
+  filename: 0.2
+  path: 0.1
+
+search:
+  top_k: 30
+  show_k: 10
+  min_cosine: 0.2
